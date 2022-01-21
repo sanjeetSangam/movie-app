@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Question 1</title>
+    <script
+      src="https://kit.fontawesome.com/1498e77e98.js"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        background-color: rgb(12, 1, 51);
+        position: relative;
+      }
+
+      #deb {
+        position: absolute;
+        /* height: 500px; */
+        width: 300px;
+        top: 80px;
+        right: 0;
+        color: rgb(75, 194, 75);
+        text-align: center;
+        font-size: 18px;
+        overflow: hidden;
+        padding: 10px;
+        border-radius: 20px;
+      }
+
+      #main {
+        /* border: 1px solid red; */
+        padding: 10px;
+        width: 100vw;
+        margin: auto;
+        position: relative;
+      }
+
+      #search {
+        /* border: 1px solid rgb(180, 143, 143); */
+        padding: 10px;
+        border-bottom: 2px solid white;
+      }
+
+      #btn,
+      #srch {
+        font-size: 18px;
+        border: hidden;
+        background: none;
+        outline: none;
+        float: right;
+        margin-left: 10px;
+        margin-right: 10px;
+        border-radius: 15%;
+        float: right;
+        border-bottom: 2px solid red;
+      }
+
+      #srch {
+        color: wheat;
+        text-align: center;
+      }
+
+      .pading {
+        padding: 10px;
+      }
+
+      #logo {
+        /* border: 1px solid white; */
+        height: 40px;
+        cursor: pointer;
+        border-radius: 20px;
+      }
+
+      #btn {
+        background-color: rgb(255, 255, 255);
+        cursor: pointer;
+      }
+
+      #movie {
+        display: flex;
+        gap: 20px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        position: relative;
+      }
+
+      #img {
+        height: 100%;
+        width: 200px;
+        box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+      }
+
+      #ptg {
+        color: white;
+      }
+
+      #list {
+        /* height: 300px; */
+        width: 450px;
+        color: white;
+        display: flex;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        padding: 10px;
+        position: relative;
+      }
+
+      #titleDiv {
+        /* border: 1px solid red; */
+        width: 200px;
+        height: 300px;
+        margin-left: 30px;
+        top: 70%;
+        right: 70%;
+      }
+
+      #rcd {
+        height: 70px;
+        width: 100px;
+        position: absolute;
+      }
+
+      #error {
+        width: 80%;
+        height: 80%;
+      }
+
+      #details {
+        position: fixed;
+        /* border: 2px solid yellow; */
+        height: 500px;
+        width: 900px;
+        top: 200px;
+        left: 20%;
+        backdrop-filter: blur(30px);
+        display: flex;
+        display: none;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+      }
+
+      #details label {
+        margin-left: 93%;
+        font-size: 35px;
+        margin-top: 1%;
+        position: absolute;
+        color: white;
+      }
+
+      #show:checked ~ #details {
+        display: block;
+      }
+
+      input[type="checkbox"] {
+        display: none;
+      }
+
+      #imgDD {
+        position: fixed;
+        /* border: 1px solid red; */
+        height: 400px;
+        width: 300px;
+        top: 10%;
+        left: 4%;
+      }
+
+      #im {
+        height: 100%;
+        width: 100%;
+      }
+
+      #dtl {
+        position: fixed;
+        /* border: 1px solid red; */
+        height: 400px;
+        width: 400px;
+        top: 10%;
+        right: 4%;
+        color: white;
+        padding-left: 2%;
+        padding-right: 2%;
+        line-height: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div id="search">
+        <img
+          id="logo"
+          src="https://logos.flamingtext.com/City-Logos/Maza-Logo.png"
+          alt=""
+        />
+        <input
+          type="text"
+          placeholder="Type movie name"
+          id="srch"
+          class="pading"
+          oninput="debounce(display, 100)"
+        />
+        <button id="btn" class="pading" onclick="getMovies()">Search</button>
+      </div>
+      <p id="ptg">Search Result will be shown here:</p>
+
+      <div id="movie" class="pading"></div>
+
+      <div id="deb"></div>
+
+      <input type="checkbox" id="show" />
+
+      <div id="details" class="list">
+        <label for="show" class="far fa-times-circle"></label>
+        <div id="imgDD"></div>
+        <div id="dtl">
+          <h2 id="title"></h2>
+          <p id="type"></p>
+          <p id="yr"></p>
+          <p id="rting"></p>
+          <p id="cast"></p>
+          <p id="genre"></p>
+          <p id="dir"></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  async function getMovies() {
+    try {
+      document.getElementById("deb").style = null;
+      document.getElementById("deb").innerText = null;
+      document.getElementById("movie").innerHTML = "";
+      document.getElementById("show").checked = false;
+
+      var searched = document.getElementById("srch").value;
+      let url = `https://www.omdbapi.com/?apikey=5e8abb2b&s=${searched}`;
+
+      const rawData = await fetch(url);
+      const data = await rawData.json();
+
+      //   console.log(data);
+
+      var movieData = data.Search;
+
+      //   console.log(movieData);
+
+      movieData.forEach(async function (item) {
+        var list = document.createElement("div");
+        list.setAttribute("id", "list");
+        list.setAttribute("class", "list");
+        var rating = await fetch(
+          `https://www.omdbapi.com/?apikey=5e8abb2b&i=${item.imdbID}&plot=short&r=json`
+        );
+
+        var ratingData = await rating.json();
+
+        console.log(ratingData);
+
+        let imdb = ratingData.imdbRating;
+
+        list.addEventListener("click", function () {
+          document.getElementById("show").checked = true;
+
+          console.log(item.A);
+          document.getElementById("imgDD").innerHTML = null;
+
+          let im = document.createElement("img");
+          im.setAttribute("id", "im");
+          im.setAttribute("src", ratingData.Poster);
+
+          document.getElementById("title").innerText = `Title: ${item.Title}`;
+          document.getElementById(
+            "type"
+          ).innerText = `Type: ${ratingData.Type}`;
+          document.getElementById(
+            "yr"
+          ).innerText = `Year: ${ratingData.Released}`;
+          document.getElementById(
+            "rting"
+          ).innerText = `Rating: ${ratingData.imdbRating}`;
+          document.getElementById(
+            "cast"
+          ).innerText = `Cast: ${ratingData.Actors}`;
+          document.getElementById(
+            "genre"
+          ).innerText = `Genre: ${ratingData.Genre}`;
+          document.getElementById(
+            "dir"
+          ).innerText = `Director: ${ratingData.Director}`;
+
+          document.getElementById("imgDD").append(im);
+        });
+
+        var imgDiv = document.createElement("div");
+        imgDiv.setAttribute("id", "imgDiv");
+
+        var img = document.createElement("img");
+        img.setAttribute("id", "img");
+        img.setAttribute("src", item.Poster);
+
+        var titleDiv = document.createElement("div");
+        titleDiv.setAttribute("id", "titleDiv");
+
+        var desc = document.createElement("div");
+        desc.setAttribute("id", "desc");
+
+        var title = document.createElement("h3");
+        title.innerText = item.Title;
+        title.style.textDecoration = "Underline";
+
+        var type = document.createElement("p");
+        type.innerText = `Type: ${item.Type}`;
+
+        var year = document.createElement("p");
+        year.innerText = `Year: ${item.Year}`;
+
+        var id = document.createElement("p");
+        id.innerText = `imdb: ${item.imdbID}`;
+
+        var textDiv = document.createElement("div");
+        textDiv.setAttribute("id", "textDiv");
+
+        // console.log(imdb);
+
+        var p = document.createElement("p");
+        var rcd = document.createElement("img");
+        rcd.setAttribute("id", "rcd");
+        rcd.setAttribute(
+          "src",
+          "http://assets.stickpng.com/images/5eaa8f7f0494d70004e7fa04.png"
+        );
+
+        p.innerText = `IMDB Rating: ${imdb}`;
+        p.setAttribute("id", "imdb");
+        p.style.color = "red";
+        p.style.textDecoration = "underline";
+
+        if (imdb > 8.5) {
+          titleDiv.append(title, type, year, p, rcd);
+        } else {
+          titleDiv.append(title, type, year, p);
+        }
+
+        imgDiv.append(img);
+
+        list.append(imgDiv, titleDiv);
+
+        document.getElementById("movie").append(list);
+      });
+      document.getElementById(
+        "ptg"
+      ).innerText = `Showing result for: "${searched}"`;
+    } catch (err) {
+      var error = document.createElement("img");
+      error.setAttribute("id", "error");
+      error.setAttribute(
+        "src",
+        "https://www.pristinit.com/assets/images/not-found.gif"
+      );
+
+      document.getElementById("movie").append(error);
+
+      document.getElementById("ptg").innerText = "Not Found!";
+    }
+
+    localStorage.setItem("movielist", JSON.stringify(movieData));
+  }
+
+  let id;
+
+  async function searchMovies() {
+    try {
+      let name = document.getElementById("srch").value;
+      let res = await fetch(
+        `https://www.omdbapi.com/?apikey=5e8abb2b&s=${name}`
+      );
+
+      let data = await res.json();
+      return data.Search;
+    } catch (err) {
+      console.log("error 464", arr);
+    }
+  }
+
+  async function display() {
+    try {
+      document.getElementById("deb").innerText = null;
+      document.getElementById("show").checked = false;
+
+      let movie_data = await searchMovies();
+
+      if (movie_data === undefined) {
+        return false;
+      }
+      //   console.log("fired");
+
+      movie_data.forEach(function (movie) {
+        let p = document.createElement("p");
+        p.innerText = movie.Title;
+
+        document.querySelector("#deb").append(p);
+        document.getElementById("deb").style.backdropFilter = "blur(20px)";
+      });
+    } catch (er) {
+      console.log(er);
+    }
+  }
+
+  function debounce(func, delay) {
+    clearTimeout(id);
+
+    id = setTimeout(function () {
+      func();
+    }, delay);
+  }
+</script>
